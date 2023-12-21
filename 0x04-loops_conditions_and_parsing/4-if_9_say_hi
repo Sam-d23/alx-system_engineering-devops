@@ -4,8 +4,9 @@ tarry=0
 
 while [ $tarry -lt 10 ]
 do
-  if [ $tarry -eq 9 ]
+  if [ $tarry -eq 8 ]
   then
+    echo "Best School"
     echo "Hi"
   fi
   echo "Best School"
