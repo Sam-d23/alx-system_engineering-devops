@@ -1,0 +1,13 @@
+#!/bin/usr/env bash
+#This script prints "Best School" 10 times but "Hi" after the 9th iteration
+tarry=0
+
+while [ $tarry -lt 10 ]
+do
+  if [ $tarry -eq 9 ]
+  then
+    echo "Hi"
+  fi
+  echo "Best School"
+  (( tarry++ ))
+done
