@@ -2,12 +2,12 @@
 #Loops from 1 to 10 printing "Best School" but "bad luck"
 #and "good luck" on 4th and 8th iteration respectively
 
-j=1
+j=0
 
-while [ $j -le 10 ]; do
-    if [ $j -eq 4 ]; then
+while [ $j -lt 10 ]; do
+    if [ $j -eq 3 ]; then
         echo "Bad Luck"
-    elif [ $j -eq 8 ]; then
+    elif [ $j -eq 7 ]; then
         echo "Good Luck"
     else
         echo "Best School"
