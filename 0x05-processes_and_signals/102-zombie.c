@@ -1,36 +1,38 @@
-#!/bin/usr/env bash
-#This script creates 5 zombie processes
-
 #include <stdio.h>
 #include <unistd.h>
 #include <stdlib.h>
-#include <sys/wait.h>
-#include <sys/types.h>
 
 /**
- * zombie_processes - function to create 5 zombie processes
+ * infinite_while - an infinite loop is created
+ * to make the program hang
+ * Return: 0 (Success)
  */
-void zombie_processes(void)
+int infinite_while(void)
 {
-    pid_t child_pid;
-    int i;
+	while (1)
+	{
+		sleep(1);
+	}
+	return (0);
+}
 
-    for (i = 0; i < 5; i++)
-    {
-        child_pid = fork();
+/**
+ * main - 5 zombie processes are created
+ * Return: 0 (Success)
+ */
+int main(void)
+{
+	int j;
+	pid_t zombie;
 
-        if (child_pid == -1)
-        {
-            perror("fork");
-            exit(EXIT_FAILURE);
-        }
+	for (j = 0; j < 5; j++)
+	{
+		zombie = fork();
+		if (!zombie)
+			return (0);
+		printf("Zombie process created, PID: %d\n", zombie);
+	}
 
-        if (child_pid == 0)
-        {
-            printf("Zombie process created, PID: %d\n", getpid());
-            exit(EXIT_SUCCESS);
-        }
-    }
-
-    sleep(10);
+	infinite_while();
+	return (0);
 }
