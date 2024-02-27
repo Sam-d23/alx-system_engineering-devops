@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+#This script shares SSH client configuration
+Host web-01
+	Hostname 52.3.246.65
+	User ubuntu
+	PasswordAuthentication no
+	IdentityFile ~/.ssh/school
