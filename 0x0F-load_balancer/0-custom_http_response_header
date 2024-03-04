@@ -1,37 +1,29 @@
 #!/usr/bin/env bash
 # This script configures web-02 to be identical to web-01.
 
-sudo apt-get -y update
-sudo apt-get -y install nginx
-sudo mkdir -p /var/www/html /var/www/error
-sudo chown -R www-data:www-data /var/www
-sudo chmod -R 755 /var/www
-echo 'Hello World!' | sudo tee /var/www/html/index.html
-echo "Ceci n'est pas une page" | sudo tee /var/www/error/404.html
+apt-get -y update
+apt-get -y install nginx
 
-server_config="
-server {
-    listen 80 default_server;
-    listen [::]:80 default_server;
-    root /var/www/html;
-    index index.html index.htm index.nginx-debian.html;
-    server_name _;
-    add_header X-Served-By \$hostname;
+HOST_NAME=$(hostname)
+HEADER="\\\n\tadd_header X-Served-By $HOST_NAME;\n"
+FIND=$(grep "X-Server-by" /etc/nginx/sites-available/default)
+if [[ -z $FIND ]]; then
+    sed -i "23i $HEADER" /etc/nginx/sites-available/default
+fi
 
-    location / {
-        try_files \$uri \$uri/ =404;
-    }
+echo "Hello World!" > /var/www/html/index.html
 
-    location /redirect_me {
-        rewrite ^ https://youtube.com permanent;
-    }
+FIND=$(grep "redirect_me" /etc/nginx/sites-available/default)
+STRING="\\\n\tlocation /redirect_me {\n\t\t return 301 https://www.youtube.com/watch?v=3MbaGJN2ioQ;\n\t}\n"
+if [[ -z $FIND ]]; then
+    sed -i "42i $STRING" /etc/nginx/sites-available/default
+fi
 
-    error_page 404 /404.html;
-    location = /404.html {
-        internal;
-    }
-}"
+FIND=$(grep "error_page 404" /etc/nginx/sites-available/default)
+ERROR="\\\n\terror_page 404 /custom_404.html;\n"
+if [[ -z $FIND ]]; then
+    echo "Ceci n'est pas une page" > /var/www/html/custom_404.html
+    sed -i "40i $ERROR" /etc/nginx/sites-available/default
+fi
 
-sudo tee /etc/nginx/sites-available/default <<< "$server_config"
-sudo ln -s /etc/nginx/sites-available/default /etc/nginx/sites-enabled/default
-sudo service nginx restart
+service nginx restart
