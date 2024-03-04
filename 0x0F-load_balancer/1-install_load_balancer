@@ -1,19 +1,18 @@
 #!/bin/bash
 #Installs and configures HAproxy on your lb-01 server.
 
-sudo apt-get update
-sudo apt-get install -y haproxy
-cat <<EOF | sudo tee /etc/haproxy/haproxy.cfg >/dev/null
-frontend http_front
+sudo apt-get -y update
+sudo apt-get -y install haproxy
+sudo chown  $USER:$USER /etc/haproxy/haproxy.cfg
+
+echo "
+frontend estebanweb
     bind *:80
-    stats uri /haproxy?stats
-    default_backend http_back
-
-backend http_back
+    mode http
+    default_backend app
+backend app
     balance roundrobin
-    server web-01 [STUDENT_ID]-web-01:80 check
-    server web-02 [STUDENT_ID]-web-02:80 check
-EOF
+    server 266930-web-01 52.3.246.65:80 check
+    server 266930-web-02 34.224.15.114:80 check" >> /etc/haproxy/haproxy.cfg
 
-sudo sed -i 's/ENABLED=0/ENABLED=1/' /etc/default/haproxy
 sudo service haproxy restart
