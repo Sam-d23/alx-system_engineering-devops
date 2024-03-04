@@ -2,23 +2,36 @@
 # This script configures web-02 to be identical to web-01.
 
 sudo apt-get -y update
-apt-get -y install haproxy
+sudo apt-get -y install nginx
+sudo mkdir -p /var/www/html /var/www/error
+sudo chown -R www-data:www-data /var/www
+sudo chmod -R 755 /var/www
+echo 'Hello World!' | sudo tee /var/www/html/index.html
+echo "Ceci n'est pas une page" | sudo tee /var/www/error/404.html
 
-server_config=\
-"
-frontend  Sam-d23_frontend
-        bind *:80
-        mode http
-        default_backend Sam-d23_backend
-backend Sam-d23_backend
-        balance roundrobin
-        server 176572-web-01 52.3.246.65:80 check
-        server 176572-web-02 34.224.15.114:80 check
-"
-echo "$server_config" | sudo tee -a /etc/haproxy/haproxy.cfg
+server_config="
+server {
+    listen 80 default_server;
+    listen [::]:80 default_server;
+    root /var/www/html;
+    index index.html index.htm index.nginx-debian.html;
+    server_name _;
+    add_header X-Served-By \$hostname;
 
-echo "ENABLED=1" | sudo tee -a /etc/default/haproxy
+    location / {
+        try_files \$uri \$uri/ =404;
+    }
 
-sudo haproxy -c -f /etc/haproxy/haproxy.cfg
+    location /redirect_me {
+        rewrite ^ https://youtube.com permanent;
+    }
 
-sudo service haproxy restart
+    error_page 404 /404.html;
+    location = /404.html {
+        internal;
+    }
+}"
+
+sudo tee /etc/nginx/sites-available/default <<< "$server_config"
+sudo ln -s /etc/nginx/sites-available/default /etc/nginx/sites-enabled/default
+sudo service nginx restart
