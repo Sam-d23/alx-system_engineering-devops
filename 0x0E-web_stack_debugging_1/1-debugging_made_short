@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+#Checks and debugs why nginx is not listening
+
+ln -sf /etc/nginx/sites-available/default /etc/nginx/sites-enabled/default
+service nginx start
+kill "$(pgrep 'nginx' | head -1)"
