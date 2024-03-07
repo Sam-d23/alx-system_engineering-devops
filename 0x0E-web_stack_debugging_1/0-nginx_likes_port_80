@@ -1,0 +1,37 @@
+#!/bin/bash
+#Checks and debugs why nginx is not listening 
+
+if ! command -v nginx &> /dev/null; then
+    echo "Nginx is not installed. Installing..."
+    sudo apt-get update
+    sudo apt-get install -y nginx
+    sudo systemctl start nginx
+    sudo systemctl enable nginx
+    echo "Nginx installed and started."
+else
+    echo "Nginx is already installed."
+fi
+
+echo "Checking Nginx configuration files..."
+if ! sudo nginx -t; then
+    echo "Error: Nginx configuration test failed. Check the configuration files."
+    exit 1
+else
+    echo "Nginx configuration test passed."
+fi
+
+echo "Checking for processes listening on port 80..."
+if sudo netstat -tuln | grep ":80 "; then
+    echo "There is another process listening on port 80. Please resolve the conflict."
+    exit 1
+else
+    echo "No other process is listening on port 80."
+fi
+
+echo "Configuring Nginx to listen on port 80 of all active IPv4 IPs..."
+sudo sed -i 's/listen 80;/listen 80 default_server;/g' /etc/nginx/sites-available/default
+sudo systemctl reload nginx
+echo "Nginx is now listening on port 80 of all active IPv4 IPs."
+
+echo "Configuration completed successfully."
+
