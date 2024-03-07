@@ -1,0 +1,39 @@
+#!/usr/bin/env bash
+#Configures HAproxy to automatically redirect HTTP traffic to HTTPS.
+
+global
+    log stdout format raw local0
+    maxconn 2000
+    user haproxy
+    group haproxy
+    daemon
+
+defaults
+    log global
+    mode http
+    option httplog
+    option dontlognull
+    option forwardfor
+    timeout connect 5000ms
+    timeout client 50000ms
+    timeout server 50000ms
+
+frontend http_frontend
+    bind *:80
+    mode http
+    option httplog
+    option forwardfor
+    reqadd X-Forwarded-Proto:\ http
+    acl is_ssl hdr(X-Forwarded-Proto) https
+    redirect scheme https code 301 if !is_ssl
+
+frontend https_frontend
+    bind *:443 ssl crt /etc/ssl/certs/domain.pem
+    mode http
+    acl is_root path -i /
+    use_backend backend_servers if is_root
+
+backend backend_servers
+    mode http
+    server web_server_1 52.3.246.65:web_server_1_port check
+    server web_server_2 34.224.15.114:web_server_2_port check
