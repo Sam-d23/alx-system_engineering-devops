@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+# Runs whoami command after one argument is passed
+
+sudo -u "$1" whoami
