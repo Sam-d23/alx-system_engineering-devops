@@ -1,41 +1,30 @@
 #!/usr/bin/python3
+"""Returns to-do list information for a given employee ID."""
 import requests
 import sys
 
-def get_employee_todo_progress(employee_id):
-    base_url = "https://jsonplaceholder.typicode.com"
-    user_url = f"{base_url}/users/{employee_id}"
-    todo_url = f"{base_url}/todos?userId={employee_id}"
-
-    try:
-        # Fetch user information
-        user_response = requests.get(user_url)
-        user_response.raise_for_status()
-        user_data = user_response.json()
-        employee_name = user_data.get('name')
-
-        # Fetch TODO list for the employee
-        todo_response = requests.get(todo_url)
-        todo_response.raise_for_status()
-        todo_data = todo_response.json()
-
-        # Calculate TODO progress
-        total_tasks = len(todo_data)
-        done_tasks = sum(1 for task in todo_data if task['completed'])
-
-        # Print employee TODO progress
-        print(f"Employee {employee_name} is done with tasks ({done_tasks}/{total_tasks}):")
-        for task in todo_data:
-            if task['completed']:
-                print(f"\t{task['title']}")
-
-    except requests.exceptions.RequestException as e:
-        print("Error fetching data:", e)
-
 if __name__ == "__main__":
+    # Check if the correct number of arguments is provided
     if len(sys.argv) != 2:
         print("Usage: python script.py <employee_id>")
         sys.exit(1)
+
+    # API URL
+    base_url = "https://jsonplaceholder.typicode.com/"
     
-    employee_id = int(sys.argv[1])
-    get_employee_todo_progress(employee_id)
+    # Fetch user information
+    user_response = requests.get(base_url + "users/{}".format(sys.argv[1]))
+    user_data = user_response.json()
+    
+    # Fetch TODO list for the employee
+    todos_response = requests.get(base_url + "todos", params={"userId": sys.argv[1]})
+    todos_data = todos_response.json()
+
+    # Extract completed task titles
+    completed_titles = [task.get("title") for task in todos_data if task.get("completed")]
+
+    # Print employee TODO progress
+    print("Employee {} is done with tasks ({}/{}):".format(
+        user_data.get("name"), len(completed_titles), len(todos_data)))
+    for title in completed_titles:
+        print("\t", title)
