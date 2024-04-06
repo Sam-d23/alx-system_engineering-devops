@@ -10,20 +10,23 @@ if __name__ == "__main__":
         print("Usage: python script.py <employee_id>")
         sys.exit(1)
 
-    user_id = sys.argv[1]
-    base_url = "https://jsonplaceholder.typicode.com/"
-    user_response = requests.get(base_url + "users/{}".format(user_id))
+    employee_id = sys.argv[1]
+    url = "https://jsonplaceholder.typicode.com/"
+
+    # Fetch user information
+    user_response = requests.get(url + "users/{}".format(employee_id))
     user_data = user_response.json()
     username = user_data.get("username")
 
-    todos_response = requests.get(base_url + "todos", params={"userId": user_id})
+    # Fetch TODO list for the employee
+    todos_response = requests.get(url + "todos",
+                                  params={"userId": employee_id})
     todos_data = todos_response.json()
 
-    # Write to CSV file
-    with open("{}.csv".format(user_id), "w", newline="") as csvfile:
+    # Write TODO list information to CSV file
+    with open("{}.csv".format(employee_id), "w", newline="") as csvfile:
         writer = csv.writer(csvfile)
-        # Write header row
-        writer.writerow(["User ID", "Username", "Completed", "Title"])
-        # Write todo items
+        writer.writerow(["Employee ID", "Username", "Completed", "Title"])
         for todo in todos_data:
-            writer.writerow([user_id, username, todo.get("completed"), todo.get("title")])
+            writer.writerow([employee_id, username, todo["completed"],
+                             todo["title"]])
