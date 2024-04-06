@@ -11,17 +11,19 @@ if __name__ == "__main__":
 
     # API URL
     base_url = "https://jsonplaceholder.typicode.com/"
-    
+
     # Fetch user information
     user_response = requests.get(base_url + "users/{}".format(sys.argv[1]))
     user_data = user_response.json()
-    
+
     # Fetch TODO list for the employee
-    todos_response = requests.get(base_url + "todos", params={"userId": sys.argv[1]})
+    todos_response = requests.get(base_url + "todos",
+                                  params={"userId": sys.argv[1]})
     todos_data = todos_response.json()
 
     # Extract completed task titles
-    completed_titles = [task.get("title") for task in todos_data if task.get("completed")]
+    completed_titles = [task.get("title") for task in
+                        todos_data if task.get("completed")]
 
     # Print employee TODO progress
     print("Employee {} is done with tasks ({}/{}):".format(
