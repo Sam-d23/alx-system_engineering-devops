@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+# nginx is installed on web-01 server
+# Nginx is supposed to listen on port 80
+# Querying Nginx at its root / with a GET request i.e requesting a page
+# it must return a page that contains the string Holberton School, using curl
+
+apt-get -y update
+apt-get -y install nginx
+ufw allow 'Nginx HTTP'
+echo 'Hello World!' > /var/www/html/index.html
+service nginx start
