@@ -1,0 +1,21 @@
+#!/usr/bin/env bash
+# Default server configuration
+
+server {
+    listen 80 default_server;
+    listen [::]:80 default_server;
+
+    root /var/www/html;
+    index index.html index.htm index.nginx-debian.html;
+
+    server_name _;
+
+    location /airbnb-onepage/ {
+        alias ~/AirBnB_clone_v2/;
+        proxy_pass http://0.0.0.0:5000;
+    }
+
+    location / {
+        try_files $uri $uri/ =404;
+    }
+}
