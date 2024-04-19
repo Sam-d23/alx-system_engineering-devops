@@ -1,0 +1,29 @@
+#!/usr/bin/env bash
+# Default server configuration is adjusted accordingly
+server {
+    listen 80 default_server;
+    listen [::]:80 default_server;
+
+    # Using server's IP as domain name
+    server_name 54.236.26.127
+
+    # Customizing HTTP response header
+    add_header X-Served-By 266930-web-01;
+
+    # Serving /airbnb-onepage/ route from AirBnB_clone_v2
+    location = /airbnb-onepage/ {
+        proxy_pass http://127.0.0.1:5000/airbnb-onepage/;
+    }
+
+    # Serving /number_odd_or_even/ route on AirBnB_clone_v2
+    location ~ /airbnb-dynamic/number_odd_or_even/(\d+)$ {
+        proxy_pass http://127.0.0.1:5001/number_odd_or_even/$1;
+    }
+
+    # Missing file  404 error page
+    error_page 404 /404.html;
+    location /404 {
+        root /var/www/html;
+        internal;
+    }
+}
