@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+# Gunicorn is gracefully reloaded.
+
+# sudo systemctl reload gunicorn.service > /dev/null 2>
+MASTER_PID=$(pgrep -f "gunicorn: master")
+
+# Sends signal to reload Gunicorn gracefully
+kill -HUP "$MASTER_PID" >/dev/null 2>&1
+
+# Waits for master process to acknowledge the reload
+while kill -0 "$MASTER_PID" >/dev/null 2>&1; do
+    sleep 1
+done
+
+# Notifies master process that workers were renewed
+kill -USR2 "$MASTER_PID" >/dev/null 2>&1
