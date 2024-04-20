@@ -1,3 +1,6 @@
+#!/usr/bin/env bash
+#Sets server up to run by default when Linux is booted.
+
 [Unit]
 Description=Gunicorn instance to serve 2-hbnb.py
 After=network.target
