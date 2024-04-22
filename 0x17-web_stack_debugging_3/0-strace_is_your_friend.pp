@@ -1,6 +1,6 @@
 ﻿# Puppet automated fix
  
-exec { 'Fixing the wordpress site':
-  command  => 'sudo sed -i s/.phpp/.php/ /var/www/html/wp-settings.php',
-  path => '/usr/local/bin/:/bin/'
+file { '/var/www/html/wp-settings.php':
+  ensure  => file,
+  content => file('/var/www/html/wp-settings.php').content.gsub('phpp', 'php'),
 }
