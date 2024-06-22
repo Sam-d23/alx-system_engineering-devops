@@ -1,2 +1,12 @@
 #!/bin/bash
-find -type f -name "*.gif" | rev | cut -d "/" -f 1 | cut -d '.' 2- | rev | LC_ALL=C sort -f
+
+# Find all files with .gif extension, including hidden files
+find . -type f -name "*.gif" -print0 |
+# Remove the .gif extension from the filenames
+sed 's/\.gif$//' |
+# Sort the filenames case-insensitively
+sort -z -f |
+# Print each filename on a new line
+awk -v RS='\0' '{print}' |
+# Ensure the output ends with a newline
+awk '{print} END {print ""}'
