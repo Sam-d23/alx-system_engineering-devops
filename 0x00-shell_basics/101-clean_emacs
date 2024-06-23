@@ -1,2 +1,6 @@
 #!/bin/bash
-rm *~
+
+# Delete files ending with '~' in current directory
+for file in *~; do
+    [ -e "$file" ] && rm -f "$file" && echo "Deleted: $file"
+done
