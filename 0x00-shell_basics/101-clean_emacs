@@ -1,2 +1,2 @@
 #!/bin/bash
-for file in *~; do [ -e "$file" ] ; rm -f "$file" ; echo "Deleted: $file" ; done
+rm *~
